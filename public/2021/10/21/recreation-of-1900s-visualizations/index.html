@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="generator" content="Hugo 0.88.1" />
+
+
+<title>Recreation of 1900&#39;s visualizations - William Cichowski&#39;s Projects</title>
+<meta property="og:title" content="Recreation of 1900&#39;s visualizations - William Cichowski&#39;s Projects">
+
+
+  <link href='/favicon.ico' rel='icon' type='image/x-icon'/>
+
+
+
+  
+
+
+
+
+
+
+
+
+<link href='//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css' rel='stylesheet' type='text/css' />
+
+
+
+<link rel="stylesheet" href="/css/fonts.css" media="all">
+<link rel="stylesheet" href="/css/main.css" media="all">
+
+
+
+  </head>
+  <body>
+    <div class="wrapper">
+      <header class="header">
+        <nav class="nav">
+  <a href="/" class="nav-logo">
+    <img src="/images/logo.png"
+         width="50"
+         height="50"
+         alt="Logo">
+  </a>
+
+  <ul class="nav-links">
+    
+    <li><a href="/about/">About</a></li>
+    
+  </ul>
+</nav>
+
+      </header>
+
+
+<main class="content" role="main">
+
+  <article class="article">
+    
+    <span class="article-duration">2 min read</span>
+    
+
+    <h1 class="article-title">Recreation of 1900&#39;s visualizations</h1>
+
+    
+    <span class="article-date">2021-10-21</span>
+    
+
+    <div class="article-content">
+      
+<script src="/2021/10/21/recreation-of-1900s-visualizations/index_files/header-attrs/header-attrs.js"></script>
+
+
+<p><strong>The goal of this challenge was to celebrate the data visualization legacy of W.E.B DuBois by recreating the visualizations from the 1900 Paris Exposition using modern tools.</strong></p>
+<p><strong>Here is the original plot that I am attempting to recreate</strong>
+<br></p>
+<p><img src="debous1.PNG" /></p>
+<p><strong>Here is my recreation</strong></p>
+<pre class="r"><code># Load in packages...
+library(tidyverse)
+library(skimr)
+library(naniar)
+library(tidytuesdayR)
+library(reshape)</code></pre>
+<pre class="r"><code># Read in the tidy data manually
+
+year &lt;- c(1790, 1800, 1810, 1820, 1830, 1840, 1850, 1860, 1870, 1880, 1890)
+colored &lt;- c(0, 100, 78, 42, 45, 30, 35, 20, 22, 36, 21)
+white &lt;- c(0, 90, 46, 30, 55, 34, 31, 16, 11, 34, 20)
+vars &lt;- c(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+
+dat &lt;- data.frame(year, colored, white, vars)
+
+
+# First im going to melt the variables, this makes them more accesible
+dat &lt;- melt(dat, id.vars = &quot;vars&quot;, measure.vars = c(&quot;colored&quot;, &quot;white&quot;)) 
+dat$year &lt;- c(1790, 1800, 1810, 1820, 1830, 1840, 1850, 1860, 1870, 1880, 1890)
+
+georgia_line &lt;-
+  ggplot(data = dat) +
+  geom_line(mapping = aes(y = value, x = year, linetype = variable)) +
+  labs(
+    title = &quot;COMPARITIVE INCREASE OF WHITE AND COLORED \n POPULATION OF GEORGIA.&quot;,
+    x = NULL,
+    y = &quot;Percent&quot;
+  ) +
+  scale_y_reverse(lim = c(100,0),
+                  breaks = seq(0, 100, by=5),
+                  expand = c(0,0)) +
+  scale_x_continuous(breaks = year,
+                     limits = c(1790, 1890),
+                     expand = c(0,0)
+                                
+  ) +
+  scale_linetype_manual(labels = c(&quot;= COLORED&quot;, &quot;= WHITE&quot;),
+                        values = c(&quot;solid&quot;, &quot;dashed&quot;)) +
+  # flipping the traditional coordinates where year on the x-axis to year on the
+  # y-axis
+  coord_flip() +
+  theme(plot.title = element_text(hjust = 0.5),
+        legend.position = &quot;bottom&quot;,
+        legend.key.width = unit(3,&quot;cm&quot;),
+        legend.background = element_rect(fill = &quot;#E0C9A6&quot;),
+        legend.title = element_blank(),
+        panel.border = element_rect(color = &quot;black&quot;,
+                                    fill = NA,
+                                    size = 1),
+        plot.background = element_rect(fill = &quot;#E0C9A6&quot;),
+        panel.background = element_rect(fill = &#39;#E0C9A6&#39;),
+        panel.grid.major = element_line(color = &#39;#ff7a7a&#39;, size = .25),
+        panel.grid.minor = element_line(color = &#39;#E0C9A6&#39;),
+        legend.spacing = unit(10, &quot;char&quot;),
+        legend.key = element_blank(),
+        axis.ticks.x = element_blank(),
+        axis.ticks.y = element_blank(),
+        axis.text.y = element_text(colour = &quot;grey40&quot;),
+        axis.text.x = element_text(size = 8, colour = &quot;grey40&quot;)
+        )
+
+# saving it so I can adjust dimensions
+ggsave(&quot;DuBois_Challenge_01.png&quot;, georgia_line, width = 5.8, height = 8.5)</code></pre>
+<p><br>
+<img src="DuBois_Challenge_01.png" /></p>
+
+    </div>
+  </article>
+
+  
+
+
+</main>
+
+      <footer class="footer">
+        <ul class="footer-links">
+          <li>
+            <a href="/index.xml" type="application/rss+xml" target="_blank">RSS feed</a>
+          </li>
+          <li>
+            <a href="https://gohugo.io/" class="footer-links-kudos">Made with <img src="/images/hugo-logo.png" alt="Img link to Hugo website" width="22" height="22"></a>
+          </li>
+        </ul>
+      </footer>
+
+    </div>
+    
+
+
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+
+
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/r.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/yaml.min.js"></script>
+<script>hljs.configure({languages: []}); hljs.initHighlightingOnLoad();</script>
+
+
+
+    
+<script src="/js/math-code.js"></script>
+<script async src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+
+
+    
+  </body>
+</html>
+

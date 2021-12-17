@@ -1,0 +1,438 @@
+---
+title: Conspiracy Theories EDA
+author: William Cichowski
+date: '2021-12-13'
+slug: conspiracy-theories-eda
+categories: []
+tags: []
+---
+
+<script src="{{< blogdown/postref >}}index_files/header-attrs/header-attrs.js"></script>
+
+
+<div id="data-title" class="section level2">
+<h2>Data Title</h2>
+<p>Measuring Belief In Conspiracy Theories</p>
+</div>
+<div id="data-source" class="section level2">
+<h2>Data Source</h2>
+<p>This project utilizes data gathered by Yam Peleg, thank you for providing such a thorough and complete dataset.
+<br>
+Yam Peleg. (2021). Measuring Belief In Conspiracy Theories (Version 12) [Survey Data]. Retrieved from <a href="https://www.kaggle.com/yamqwe/measuring-belief-in-conspiracy-theories/metadata" class="uri">https://www.kaggle.com/yamqwe/measuring-belief-in-conspiracy-theories/metadata</a>
+<br></p>
+<p><br></p>
+</div>
+<div id="dataset-information" class="section level2">
+<h2>Dataset Information</h2>
+<p>This data was collected through an interactive on-line version of the Generic Conspiracist Beliefs Scale in 2016 on <a href="https://openpsychometrics.org/tests/GCBS/">Open Psychometrics.</a>. The Generic Conspiracist Beliefs Scale (GCBS) is the most widely used measure of general belief in conspiracy theories. The scale comprises five related but distinct factors (Government Malfeasance, Extraterrestrial Cover-up, Malevolent Global Conspiracies, Personal Well being, and Control of Information) and has 3 questions that address each factor. This dataset contains <strong>2495 observations</strong> (people who answered the questionnaire) and has <strong>73 different variables</strong>. One variable is a distinct identifier, 54 different questions, and 18 variables that measured the time it took to answer each question.</p>
+<ul>
+<li>Of the 54 different questions (see codebook for more thorough explanations):
+<ul>
+<li>Q1-Q15 are Questions are from the GCBS</li>
+<li>TIPI1-TIPI10 Questions are from the The Ten Item Personality Inventory (Brief Measure of the Big Five Personality Domains)</li>
+<li>VCL1-VCL16 Were presented as a check-list and subjects were instructed “In the grid below, check all the words whose definitions you are sure you know” This was a validity check.</li>
+<li>education, urban, gender, engnat, age, hand, religion, orientation, race, voted, married, familysize, major
+were all demographic variables.</li>
+</ul></li>
+</ul>
+<div id="the-gcbs-questions" class="section level3">
+<h3>The GCBS Questions:</h3>
+<p>The responses to the Generic Conspiracist Beliefs Scale questions range from 1-5 (1 = Disagree, 3 = Neutral, and 5 = Agree). Here are the subgroups of the GCBS and the questions that make up that group:
+<br>
+<strong>Government Malfeasance</strong></p>
+<ul>
+<li>Q1: The government is involved in the murder of innocent citizens and/or well-known public figures, and keeps
+this a secret.</li>
+<li>Q6: The government permits or perpetrates acts of terrorism on its own soil, disguising its involvement.</li>
+<li>Q11: The government uses people as patsies to hide its involvement in criminal activity.</li>
+</ul>
+<p><strong>Extraterrestrial Cover-up</strong></p>
+<ul>
+<li>Q3: Secret organizations communicate with extraterrestrials, but keep this fact from the public.</li>
+<li>Q8: Evidence of alien contact is being concealed from the public.</li>
+<li>Q13: Some UFO sightings and rumors are planned or staged in order to distract the public from real alien contact.</li>
+</ul>
+<p><strong>Malevolent Global Conspiracies</strong></p>
+<ul>
+<li>Q2: The power held by heads of state is second to that of small unknown groups who really control world politics.</li>
+<li>Q7: A small, secret group of people is responsible for making all major world decisions, such as going to war.</li>
+<li>Q12: Certain significant events have been the result of the activity of a small group who secretly manipulate world events.</li>
+</ul>
+<p><strong>Personal Well being</strong></p>
+<ul>
+<li>Q4: The spread of certain viruses and/or diseases is the result of the deliberate, concealed efforts of some organization.</li>
+<li>Q9: Technology with mind-control capacities is used on people without their knowledge.</li>
+<li>Q14: Experiments involving new drugs or technologies are routinely carried out on the public without their knowledge or consent.</li>
+</ul>
+<p><strong>Control of Information</strong></p>
+<ul>
+<li>Q5: Groups of scientists manipulate, fabricate, or suppress evidence in order to deceive the public.</li>
+<li>Q10: New and advanced technology which would harm current industry is being suppressed.</li>
+<li>Q15: A lot of important information is deliberately concealed from the public out of self-interest.</li>
+</ul>
+<p>Now, lets get a peak into our data.</p>
+</div>
+</div>
+<div id="correlation-between-questions" class="section level2">
+<h2>Correlation Between Questions</h2>
+<p>The correlation matrix between all numeric variables inside of this dataset would be uninteresting due to the sheer quantity of information, so here are some of the more interesting correlation matrices. The first one is a correlation matrix between each of the questions and a corresponding heatmap.
+<br></p>
+<pre><code>##            Q1        Q2        Q3        Q4        Q5        Q6        Q7
+## Q1  1.0000000 0.5259992 0.3553928 0.5244323 0.4810747 0.6313131 0.4722710
+## Q2  0.5259992 1.0000000 0.3955108 0.5348860 0.4574975 0.5513960 0.6722188
+## Q3  0.3553928 0.3955108 1.0000000 0.4993781 0.3988923 0.4002287 0.4232258
+## Q4  0.5244323 0.5348860 0.4993781 1.0000000 0.5709273 0.6090539 0.5667395
+## Q5  0.4810747 0.4574975 0.3988923 0.5709273 1.0000000 0.4952588 0.4461981
+## Q6  0.6313131 0.5513960 0.4002287 0.6090539 0.4952588 1.0000000 0.5404170
+## Q7  0.4722710 0.6722188 0.4232258 0.5667395 0.4461981 0.5404170 1.0000000
+## Q8  0.3902059 0.3767693 0.7839542 0.4894234 0.4097576 0.4125879 0.4126150
+## Q9  0.4179718 0.4861810 0.4905484 0.5647747 0.4641904 0.4841255 0.5290301
+## Q10 0.4357865 0.3804928 0.3209913 0.4040387 0.4277623 0.4079687 0.3886172
+## Q11 0.6435136 0.5207263 0.3418064 0.5224062 0.4935141 0.6228032 0.4927641
+## Q12 0.5224025 0.7158851 0.4384278 0.6006273 0.4920795 0.5873651 0.7540288
+## Q13 0.3805006 0.4001964 0.7118867 0.5128834 0.4279414 0.4242864 0.4486267
+## Q14 0.5345780 0.5002339 0.4314834 0.6038268 0.5390785 0.5471694 0.5160994
+## Q15 0.5051815 0.3994560 0.2654400 0.3943633 0.4507697 0.4658040 0.3887925
+##            Q8        Q9       Q10       Q11       Q12       Q13       Q14
+## Q1  0.3902059 0.4179718 0.4357865 0.6435136 0.5224025 0.3805006 0.5345780
+## Q2  0.3767693 0.4861810 0.3804928 0.5207263 0.7158851 0.4001964 0.5002339
+## Q3  0.7839542 0.4905484 0.3209913 0.3418064 0.4384278 0.7118867 0.4314834
+## Q4  0.4894234 0.5647747 0.4040387 0.5224062 0.6006273 0.5128834 0.6038268
+## Q5  0.4097576 0.4641904 0.4277623 0.4935141 0.4920795 0.4279414 0.5390785
+## Q6  0.4125879 0.4841255 0.4079687 0.6228032 0.5873651 0.4242864 0.5471694
+## Q7  0.4126150 0.5290301 0.3886172 0.4927641 0.7540288 0.4486267 0.5160994
+## Q8  1.0000000 0.4798277 0.3647668 0.3710987 0.4231631 0.7570774 0.4494462
+## Q9  0.4798277 1.0000000 0.3666358 0.4609717 0.5709876 0.5368740 0.5546263
+## Q10 0.3647668 0.3666358 1.0000000 0.4506384 0.4038857 0.3684007 0.4145611
+## Q11 0.3710987 0.4609717 0.4506384 1.0000000 0.5478491 0.3986730 0.5616704
+## Q12 0.4231631 0.5709876 0.4038857 0.5478491 1.0000000 0.4851817 0.5628844
+## Q13 0.7570774 0.5368740 0.3684007 0.3986730 0.4851817 1.0000000 0.4968874
+## Q14 0.4494462 0.5546263 0.4145611 0.5616704 0.5628844 0.4968874 1.0000000
+## Q15 0.3056115 0.3214413 0.4495470 0.5395529 0.4097936 0.2986885 0.4616926
+##           Q15
+## Q1  0.5051815
+## Q2  0.3994560
+## Q3  0.2654400
+## Q4  0.3943633
+## Q5  0.4507697
+## Q6  0.4658040
+## Q7  0.3887925
+## Q8  0.3056115
+## Q9  0.3214413
+## Q10 0.4495470
+## Q11 0.5395529
+## Q12 0.4097936
+## Q13 0.2986885
+## Q14 0.4616926
+## Q15 1.0000000</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-2-1.png" width="672" />
+<br>
+Although the questions have been factored into 5 groups, investigators have typically treated the GCBS as unidimensional by referencing only overall total according to <a href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC7082021/#pone.0230365.ref038">Kenneth Graham Drinkwater.</a>
+Obviously, the the points along the diagonal have a correlation of 1 (each question has a perfect correlation with itself), but the questions overall seem to have a mid-high correlation with one another. On the upper left of the diagonal, I have added orange circles that represent the correlations between clustered points, these points tend to have slightly higher correlations than elsewhere on the graph, which we can see here.
+<br>
+Next, we have correlation matrix, and heatmap of the time taken to answer each question and then a heatmap of questions and time combined.
+<br></p>
+<pre><code>##                E1            E2            E3            E4            E5
+## E1   1.0000000000 -5.645375e-04 -0.0015336927  0.0007056181 -0.0028506511
+## E2  -0.0005645375  1.000000e+00 -0.0070927519 -0.0007325650 -0.0067190041
+## E3  -0.0015336927 -7.092752e-03  1.0000000000 -0.0006611796  0.0729000784
+## E4   0.0007056181 -7.325650e-04 -0.0006611796  1.0000000000  0.0002734248
+## E5  -0.0028506511 -6.719004e-03  0.0729000784  0.0002734248  1.0000000000
+## E6   0.0008491785  9.067204e-04  0.0991462788  0.0071194776  0.1130558026
+## E7  -0.0024566650  1.584771e-03  0.0130118705  0.0002049808  0.0379689730
+## E8   0.0010952024 -7.141136e-03  0.0752169965  0.0812452422  0.0418887302
+## E9  -0.0043389421 -6.896362e-03  0.0614572549 -0.0017181874  0.0328792984
+## E10  0.0019196674 -4.143542e-03  0.0621160571 -0.0017987622  0.0726690656
+## E11  0.0070346075 -5.064666e-03  0.0613937276 -0.0031643046  0.1482661254
+## E12 -0.0005083969 -8.155671e-05  0.0058571535 -0.0011140996  0.0002933136
+## E13  0.0028949488  1.037386e-02  0.1414273244  0.0048269762  0.0821707331
+## E14 -0.0084366939 -2.134050e-03  0.1344625166  0.0031981875  0.1244686053
+## E15 -0.0017996856 -3.299596e-03  0.0369687124 -0.0016359351  0.0497909402
+##               E6            E7            E8           E9           E10
+## E1  0.0008491785 -0.0024566650  0.0010952024 -0.004338942  0.0019196674
+## E2  0.0009067204  0.0015847712 -0.0071411360 -0.006896362 -0.0041435421
+## E3  0.0991462788  0.0130118705  0.0752169965  0.061457255  0.0621160571
+## E4  0.0071194776  0.0002049808  0.0812452422 -0.001718187 -0.0017987622
+## E5  0.1130558026  0.0379689730  0.0418887302  0.032879298  0.0726690656
+## E6  1.0000000000  0.0285072990  0.0966360256  0.059766712  0.0853539936
+## E7  0.0285072990  1.0000000000  0.0139021596  0.023898655  0.0201227503
+## E8  0.0966360256  0.0139021596  1.0000000000  0.051448603  0.0417693618
+## E9  0.0597667124  0.0238986548  0.0514486027  1.000000000  0.0391251282
+## E10 0.0853539936  0.0201227503  0.0417693618  0.039125128  1.0000000000
+## E11 0.1629415522  0.0224101899  0.0925325246  0.063949914  0.0827260619
+## E12 0.0266106550  0.0004053589 -0.0009703652  0.002660952 -0.0006010187
+## E13 0.1853554176  0.0464808863  0.2033715033  0.101528611  0.1010308032
+## E14 0.1708467007  0.0798827640  0.1482332311  0.107637389  0.1194729968
+## E15 0.1330722167  0.0346907560  0.0337911033  0.065138704  0.1397863534
+##              E11           E12         E13          E14          E15
+## E1   0.007034607 -5.083969e-04 0.002894949 -0.008436694 -0.001799686
+## E2  -0.005064666 -8.155671e-05 0.010373857 -0.002134050 -0.003299596
+## E3   0.061393728  5.857154e-03 0.141427324  0.134462517  0.036968712
+## E4  -0.003164305 -1.114100e-03 0.004826976  0.003198187 -0.001635935
+## E5   0.148266125  2.933136e-04 0.082170733  0.124468605  0.049790940
+## E6   0.162941552  2.661066e-02 0.185355418  0.170846701  0.133072217
+## E7   0.022410190  4.053589e-04 0.046480886  0.079882764  0.034690756
+## E8   0.092532525 -9.703652e-04 0.203371503  0.148233231  0.033791103
+## E9   0.063949914  2.660952e-03 0.101528611  0.107637389  0.065138704
+## E10  0.082726062 -6.010187e-04 0.101030803  0.119472997  0.139786353
+## E11  1.000000000  7.570151e-03 0.108871907  0.157834941  0.095948129
+## E12  0.007570151  1.000000e+00 0.012565616  0.009516627  0.007034876
+## E13  0.108871907  1.256562e-02 1.000000000  0.244639916  0.200800379
+## E14  0.157834941  9.516627e-03 0.244639916  1.000000000  0.393895392
+## E15  0.095948129  7.034876e-03 0.200800379  0.393895392  1.000000000</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-3-1.png" width="672" /><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-3-2.png" width="672" />
+<br>
+The correlations between are very small if any, the only trend we see is that as the survey progresses, the time taken to answer each question becomes slightly more correlated with the time it took to answer the previous and next question.
+<br>
+Lastly for correlations, we will explore the relationship between the factored groups scores and the total scores.</p>
+<pre><code>##             total_score  gm_score  mg_score  et_score  pw_score  ci_score
+## total_score   1.0000000 0.8532273 0.8469783 0.7585207 0.8909156 0.8074808
+## gm_score      0.8532273 1.0000000 0.6772533 0.4870330 0.7057995 0.6854301
+## mg_score      0.8469783 0.6772533 1.0000000 0.5130992 0.7102343 0.5893014
+## et_score      0.7585207 0.4870330 0.5130992 1.0000000 0.6287308 0.4922485
+## pw_score      0.8909156 0.7057995 0.7102343 0.6287308 1.0000000 0.6594523
+## ci_score      0.8074808 0.6854301 0.5893014 0.4922485 0.6594523 1.0000000</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-4-1.png" width="672" />
+<br>
+The toal score is highly correlated with every sub score, and the subgroups that have the highest correlation between responses are the Malevelant Global Conspiracies and Personal Well-being categories. The sub-categories
+with the lowest correlation are Extraterrestrial cover-up and Government Malfeasance.</p>
+</div>
+<div id="distributions-amoung-demographics" class="section level2">
+<h2>Distributions amoung Demographics</h2>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-6-1.png" width="672" />
+For all of the total score distributions, we see roughly normal distribution with no significant trends in race.
+<img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-7-1.png" width="672" />
+We can see here that the majority of responders have completed highschool, but did not go on to graduate from University.
+<img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-8-1.png" width="672" />
+With respect to the urban deomgraphic, we can see that the majority of people in the survey are from the suburbs, followed by urban, with no signifacant trend in response.
+<img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-9-1.png" width="672" />
+The number of female and male respondents seems almost the same. Interestingly, we see that the male distribution tends to be flatter(less bell like) than the female distribution.
+<img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-10-1.png" width="672" />
+Uninteresting and not useful graph due to one falty response.
+<img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-11-1.png" width="672" />
+Majority of the participants were of english nationality.
+<img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-12-1.png" width="672" />
+This graph is not useful because we have one outlier who completely lied about their age.
+<img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-13-1.png" width="672" />
+We see here that the dominant hand does not really have any correlation with results.</p>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-14-1.png" width="672" />
+One interesting result of this graph is that other has a much higher total score that all of the other groups.
+<img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-15-1.png" width="672" />
+We see that all orientations have virtually identical distributions.
+<img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-16-1.png" width="672" />
+We see that all those who voted and did not vote have virtually identical distributions.
+<img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-17-1.png" width="672" />
+We see that those who are married and not married have virtually identical distributions.
+<br>
+Next, I modified the demographic function to address each sub-score of the test to measure it against each demographic, I then plugged these into map functions. I will adrress any interesting results after the displaysof all the graphs.</p>
+<pre><code>## [[1]]</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-18-1.png" width="672" /></p>
+<pre><code>## 
+## [[2]]</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-18-2.png" width="672" /></p>
+<pre><code>## 
+## [[3]]</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-18-3.png" width="672" /></p>
+<pre><code>## 
+## [[4]]</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-18-4.png" width="672" /></p>
+<pre><code>## 
+## [[5]]</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-18-5.png" width="672" /></p>
+<pre><code>## 
+## [[6]]</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-18-6.png" width="672" /></p>
+<pre><code>## 
+## [[7]]</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-18-7.png" width="672" /></p>
+<pre><code>## 
+## [[8]]</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-18-8.png" width="672" /></p>
+<pre><code>## 
+## [[9]]</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-18-9.png" width="672" /></p>
+<pre><code>## 
+## [[10]]</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-18-10.png" width="672" /></p>
+<pre><code>## 
+## [[11]]</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-18-11.png" width="672" /></p>
+<pre><code>## 
+## [[12]]</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-18-12.png" width="672" /></p>
+<pre><code>## [[1]]</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-18-13.png" width="672" /></p>
+<pre><code>## 
+## [[2]]</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-18-14.png" width="672" /></p>
+<pre><code>## 
+## [[3]]</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-18-15.png" width="672" /></p>
+<pre><code>## 
+## [[4]]</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-18-16.png" width="672" /></p>
+<pre><code>## 
+## [[5]]</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-18-17.png" width="672" /></p>
+<pre><code>## 
+## [[6]]</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-18-18.png" width="672" /></p>
+<pre><code>## 
+## [[7]]</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-18-19.png" width="672" /></p>
+<pre><code>## 
+## [[8]]</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-18-20.png" width="672" /></p>
+<pre><code>## 
+## [[9]]</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-18-21.png" width="672" /></p>
+<pre><code>## 
+## [[10]]</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-18-22.png" width="672" /></p>
+<pre><code>## 
+## [[11]]</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-18-23.png" width="672" /></p>
+<pre><code>## 
+## [[12]]</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-18-24.png" width="672" /></p>
+<pre><code>## [[1]]</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-18-25.png" width="672" /></p>
+<pre><code>## 
+## [[2]]</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-18-26.png" width="672" /></p>
+<pre><code>## 
+## [[3]]</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-18-27.png" width="672" /></p>
+<pre><code>## 
+## [[4]]</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-18-28.png" width="672" /></p>
+<pre><code>## 
+## [[5]]</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-18-29.png" width="672" /></p>
+<pre><code>## 
+## [[6]]</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-18-30.png" width="672" /></p>
+<pre><code>## 
+## [[7]]</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-18-31.png" width="672" /></p>
+<pre><code>## 
+## [[8]]</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-18-32.png" width="672" /></p>
+<pre><code>## 
+## [[9]]</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-18-33.png" width="672" /></p>
+<pre><code>## 
+## [[10]]</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-18-34.png" width="672" /></p>
+<pre><code>## 
+## [[11]]</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-18-35.png" width="672" /></p>
+<pre><code>## 
+## [[12]]</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-18-36.png" width="672" /></p>
+<pre><code>## [[1]]</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-18-37.png" width="672" /></p>
+<pre><code>## 
+## [[2]]</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-18-38.png" width="672" /></p>
+<pre><code>## 
+## [[3]]</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-18-39.png" width="672" /></p>
+<pre><code>## 
+## [[4]]</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-18-40.png" width="672" /></p>
+<pre><code>## 
+## [[5]]</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-18-41.png" width="672" /></p>
+<pre><code>## 
+## [[6]]</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-18-42.png" width="672" /></p>
+<pre><code>## 
+## [[7]]</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-18-43.png" width="672" /></p>
+<pre><code>## 
+## [[8]]</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-18-44.png" width="672" /></p>
+<pre><code>## 
+## [[9]]</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-18-45.png" width="672" /></p>
+<pre><code>## 
+## [[10]]</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-18-46.png" width="672" /></p>
+<pre><code>## 
+## [[11]]</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-18-47.png" width="672" /></p>
+<pre><code>## 
+## [[12]]</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-18-48.png" width="672" /></p>
+<pre><code>## [[1]]</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-18-49.png" width="672" /></p>
+<pre><code>## 
+## [[2]]</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-18-50.png" width="672" /></p>
+<pre><code>## 
+## [[3]]</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-18-51.png" width="672" /></p>
+<pre><code>## 
+## [[4]]</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-18-52.png" width="672" /></p>
+<pre><code>## 
+## [[5]]</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-18-53.png" width="672" /></p>
+<pre><code>## 
+## [[6]]</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-18-54.png" width="672" /></p>
+<pre><code>## 
+## [[7]]</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-18-55.png" width="672" /></p>
+<pre><code>## 
+## [[8]]</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-18-56.png" width="672" /></p>
+<pre><code>## 
+## [[9]]</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-18-57.png" width="672" /></p>
+<pre><code>## 
+## [[10]]</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-18-58.png" width="672" /></p>
+<pre><code>## 
+## [[11]]</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-18-59.png" width="672" /></p>
+<pre><code>## 
+## [[12]]</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-18-60.png" width="672" />
+The Government Malevolence scores (GM) seems to have 3 different peaks, the lowest score,
+the middle score, and the highest score (3, 10, 15) respectively. Interestingly enough, all of the scores seem to follow the same pattern–at slightly different intensities–besides the Control of Information sub-group. The Malevolent Global (MG) Conspiracies and Extraterrestrial Cover-up group have virtually identical distributions, majority of 3’s, followed by significantly less 10s, and even less 15’s. The personal well-being is a cross between the GM and MG groups with peaks at each of the numbers that slightly decrease until 15.</p>
+</div>
+<div id="bivariate-analysis" class="section level2">
+<h2>Bivariate analysis</h2>
+<p>We are graphing the relationship between the total score and each of the sub scores and the familysize and age of the respondents.
+<img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-19-1.png" width="672" /><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-19-2.png" width="672" /><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-19-3.png" width="672" /><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-19-4.png" width="672" /><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-19-5.png" width="672" /><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-19-6.png" width="672" /><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-19-7.png" width="672" /><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-19-8.png" width="672" /><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-19-9.png" width="672" /><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-19-10.png" width="672" /><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-19-11.png" width="672" /><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-19-12.png" width="672" /><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-19-13.png" width="672" /><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-19-14.png" width="672" /><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-19-15.png" width="672" /><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-19-16.png" width="672" /><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-19-17.png" width="672" /><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-19-18.png" width="672" /><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-19-19.png" width="672" /><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-19-20.png" width="672" /><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-19-21.png" width="672" /><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-19-22.png" width="672" /><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-19-23.png" width="672" /><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-19-24.png" width="672" />
+Here we can see that there is a very little, if any relationship between family size and age and the scores in each of the sub-categories. The only interesting thing that we can derive from these plots is that the few very large family sizes in the plot tend to believe more in conpsiracy theories.</p>
+</div>
+<div id="item-response-theory-rasch-model" class="section level2">
+<h2>Item Response Theory (Rasch Model)</h2>
+<p>This was a much more experimental portion of my project, but I figured I had to try given the structure of my data. Item response Theory(IRT) is a mathematical approach for quantifying latent traits based on the fundamental assumption that a subject’s response to an item is a function of the difference between 1) his/her abilities and 2) the characteristics of the item. Here, I attempt to create a Rasch Model on the basis of the first 15 questions and create a difficulty based on each score (1-5) for each question. I was forced to eliminate one of the categories due to faulty results.
+First, We will explore the ICC Curves of the 15 questions (unfortunately, there is nothing I can do to hide the iteration cycles, but they provide meaningful information such as the variance parameters and estimations):
+<img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-20-1.png" width="672" /><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-20-2.png" width="672" /><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-20-3.png" width="672" /><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-20-4.png" width="672" /><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-20-5.png" width="672" /><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-20-6.png" width="672" /><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-20-7.png" width="672" /><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-20-8.png" width="672" /><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-20-9.png" width="672" /><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-20-10.png" width="672" /><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-20-11.png" width="672" /><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-20-12.png" width="672" /><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-20-13.png" width="672" /><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-20-14.png" width="672" /><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-20-15.png" width="672" />
+We can see that the expected are generally pretty good estimates for the actual results. We also can see
+that the questions greatly vary in “ability” required to solve them. Questions 2, 3, 6, 8, 9, and 13 all require high levels of ability (ability 0 is at a score of 2.25 or less). Specifically questions 3, 9, 13, which means, these values are correlated the most to higher scores on the test. The questions not listed (1, 4, 5, 7, 10, 11, 12, 14, 15) do not have as strong of a correlation with total score.
+<img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-21-1.png" width="672" /><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-21-2.png" width="672" /><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-21-3.png" width="672" /></p>
+<pre><code>##       xsi              se.xsi       
+##  Min.   :-1.6976   Min.   :0.04697  
+##  1st Qu.:-0.3727   1st Qu.:0.05273  
+##  Median : 0.1266   Median :0.05548  
+##  Mean   : 0.1056   Mean   :0.05961  
+##  3rd Qu.: 0.6285   3rd Qu.:0.06373  
+##  Max.   : 1.3227   Max.   :0.11293</code></pre>
+<p>We can see there is almost no relationship with question number and difficulty, this makes sense because the questionaire was put together in a random order. The estimated item difficulty is convexly correlated to the standard error. ALso, the minimum xsi maximum xsi and mean xsi are the minimum, maximum, and mean difficulties respectively.</p>
+<pre><code>## Item fit calculation based on 15 simulations
+## |**********|
+## |----------|</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-22-1.png" width="672" /><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-22-2.png" width="672" /><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-22-3.png" width="672" />
+Here we can see that almost all of the graphs have very close to perfect infits, and roughly close to fit outfits aswell (with greater variation). The wright map shows that the majority of respondees landed in the 3-4-5 range for responses on questions, and we can see that basically every questions follows a logical format where people who choose category 5 (agree the most with the singular question) tend to have higher scores. This is very much the case in 3, 9, and 13 where we can see they are noticably higher than all of the other questions, which makes sense given their influence that we discussed earlier.</p>
+<p><br></p>
+</div>
+<div id="conclusion" class="section level2">
+<h2>Conclusion</h2>
+<p>This dataset has so much information to explore, and we have only scrathed the surface. Based off the correlation matrices we can conclude that questions in the same group generally had a much higher correlation than random questions. The only subgroup where this fact did not hold was Control of Information. We can also conclude that the time taken to answer each question is uncorrelated except near the end, where correlations greatly increase per question. We can also conclude that the score distribution follows a normal distribution, and we do not have too many intersting results in the demographics. We can also see in the IRT that some questions (such as Q3, Q9, and Q13) had a larger correlation with total score than others. This may provide some insight to the researchers on how to word questions or the content of questions in the furture.</p>
+</div>

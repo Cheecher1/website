@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>William Cichowski&#39;s Projects</title>
+    <link>/</link>
+    <description>Recent content on William Cichowski&#39;s Projects</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Thu, 04 Nov 2021 21:13:14 -0500</lastBuildDate><atom:link href="/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Database Design and Implementation</title>
+      <link>/2021/11/04/database-design-and-implementation/</link>
+      <pubDate>Thu, 04 Nov 2021 21:13:14 -0500</pubDate>
+      
+      <guid>/2021/11/04/database-design-and-implementation/</guid>
+      <description>Source Dataset information# Loading in packages:library(tidyverse)library(RSQLite)library(DBI)library(knitr)
+In the following project, I take the following csv (source dataset):music &amp;lt;- read.csv(&amp;quot;music.csv&amp;quot;)glimpse(music)## Rows: 3,759## Columns: 28## $ TrackName &amp;lt;chr&amp;gt; &amp;quot;For Those About To Rock (We Salute You)&amp;quot;, &amp;quot;B~## $ Composer &amp;lt;chr&amp;gt; &amp;quot;Angus Young, Malcolm Young, Brian Johnson&amp;quot;, ~## $ TrackLength &amp;lt;int&amp;gt; 343719, 342562, 342562, 230619, 252051, 37541~## $ TrackSizeBytes &amp;lt;int&amp;gt; 11170334, 5510424, 5510424, 3990994, 4331779,~## $ TrackPrice &amp;lt;dbl&amp;gt; 0.</description>
+    </item>
+    
+    <item>
+      <title>2020 Election Visualizations</title>
+      <link>/2021/11/03/2020-election-visualizations/</link>
+      <pubDate>Wed, 03 Nov 2021 21:13:14 -0500</pubDate>
+      
+      <guid>/2021/11/03/2020-election-visualizations/</guid>
+      <description>Project OutlineIn this project, we were given the datasets and asked to recreate these visuals. Many people were skeptical about the advent of mail-in ballots in the 2020 presidential election. Specifically, many pundits, news agencies, and politicians stated that mail-in ballots benifited democrats for whatever reason. In the following project, we take the state of Georgia, and figure out by county, how large the percentage of mail-in voters was.</description>
+    </item>
+    
+    <item>
+      <title>Recreation of 1900&#39;s visualizations</title>
+      <link>/2021/10/21/recreation-of-1900s-visualizations/</link>
+      <pubDate>Thu, 21 Oct 2021 21:13:14 -0500</pubDate>
+      
+      <guid>/2021/10/21/recreation-of-1900s-visualizations/</guid>
+      <description>The goal of this challenge was to celebrate the data visualization legacy of W.E.B DuBois by recreating the visualizations from the 1900 Paris Exposition using modern tools.
+Here is the original plot that I am attempting to recreateHere is my recreation
+# Load in packages...library(tidyverse)library(skimr)library(naniar)library(tidytuesdayR)library(reshape)# Read in the tidy data manuallyyear &amp;lt;- c(1790, 1800, 1810, 1820, 1830, 1840, 1850, 1860, 1870, 1880, 1890)colored &amp;lt;- c(0, 100, 78, 42, 45, 30, 35, 20, 22, 36, 21)white &amp;lt;- c(0, 90, 46, 30, 55, 34, 31, 16, 11, 34, 20)vars &amp;lt;- c(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)dat &amp;lt;- data.</description>
+    </item>
+    
+    <item>
+      <title>About</title>
+      <link>/about/</link>
+      <pubDate>Thu, 05 May 2016 21:48:51 -0700</pubDate>
+      
+      <guid>/about/</guid>
+      <description>Hello everyone, my name is Will Cichowski and I am currently a Junior at Northwestern University studying Mathematical Methods in Social Sciences and (the soon to be major) Data Science. I love to make sense out of complex data by building different models, and use different tools to be able to help other people understand it. In my free time, I like to play basketball, poker, and watch anime.</description>
+    </item>
+    
+  </channel>
+</rss>

@@ -1,0 +1,112 @@
+---
+title: "2020 Election Visualizations"
+author: "William Cichowski"
+date: 2021-11-03T21:13:14-05:00
+categories: ["R"]
+tags: ["R Markdown", "SQL"]
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(collapse = TRUE)
+```
+<br>
+
+## Project Outline
+
+**In this project, we were given the datasets and asked to recreate these visuals. Many people were skeptical about the advent of mail-in ballots in the 2020 presidential election. Specifically, many pundits, news agencies, and politicians stated that mail-in ballots benifited democrats for whatever reason. In the following project, we take the state of Georgia, and figure out by county, how large the percentage of mail-in voters was.** 
+<br>
+```{r load-packages-data-seed, eval=TRUE, message=FALSE, warning=FALSE}
+# Load package(s)
+library(tidyverse)
+library(janitor)
+library(grid)
+library(jpeg)
+library(sf)
+library(patchwork)
+library(ggforce)
+
+# Load datasets
+ga_election_dat <-
+read_csv(file = "ga_election_data.csv") %>% 
+  clean_names() %>% 
+  mutate(prop_of_early = (absentee_by_mail_votes + advanced_voting_votes)/ total_votes) %>% 
+  select(-contains("_votes"))
+```
+<br>
+```{r, fig.height=7, fig.width=7}
+# loading data for Georgia counties
+ga_counties <- tigris::counties(state = "GA", cb = TRUE, progress_bar = FALSE) %>% 
+  clean_names()
+
+# Biden info table & map
+
+# left joining the two tables together with biden data
+ga_biden_new <-
+  ga_counties %>% 
+  left_join(
+    ga_election_dat %>% 
+      filter(candidate == "Joseph R. Biden"),
+    by = c("name" = "county"))
+
+# creating the plot
+biden_plot <- ga_biden_new %>% 
+  ggplot() +
+  geom_sf(aes(fill = prop_of_early)) +
+  scale_fill_gradient2(low = "#1AFF1A",
+                       high = "#5D3A9B",
+                       midpoint = .75,
+                       name = NULL,
+                       limits = c(.5, 1),
+                       breaks = c(.5, .75, 1),
+                       labels = scales::percent_format(),
+  ) +
+  labs(
+    title = "Joseph R. Biden",
+    subtitle = "Democratic Nominee"
+  ) +
+  theme_void() +
+  theme(
+    plot.title = element_text(hjust = 0.5, size = 12, face = "bold"),
+    plot.subtitle = element_text(hjust = 0.5, size = 12))
+
+# left joining the two tables together with trump data
+ga_trump_new <-
+  ga_counties %>% 
+  left_join(
+    ga_election_dat %>% 
+      filter(candidate == "Donald J. Trump"),
+    by = c("name" = "county"))
+
+# creating the plot
+trump_plot <-
+  ga_trump_new %>% 
+  ggplot() +
+  geom_sf(aes(fill = prop_of_early)) +
+  scale_fill_gradient2(low = "#1AFF1A",
+                       high = "#5D3A9B",
+                       midpoint = .75,
+                       name = NULL,
+                       limits = c(.5, 1),
+                       breaks = c(.5, .75, 1),
+                       labels = scales::percent_format(),
+  ) +
+  labs(
+    title = "Donald J. Trump",
+    subtitle = "Republican Nominee"
+  ) +
+  theme_void() +
+  theme(
+    plot.title = element_text(hjust = 0.5, size = 12, face = "bold"),
+    plot.subtitle = element_text(hjust = 0.5, size = 12))
+
+comparision <- biden_plot + trump_plot
+comparision + plot_annotation(
+  title = 'Percentage of votes From early voting',
+    theme = theme(plot.title = element_text(size = 24, face = 'bold')))
+```
+
+**The insight we have learned was that both nominees had a large portion of their votes from mail in ballots 
+(over 50% in almost every county for both candidates). This makes the argument that the democrats used mail in 
+ballots to illegally cast extra votes less believable.**
+
+

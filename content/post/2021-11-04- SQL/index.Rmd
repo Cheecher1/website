@@ -1,0 +1,172 @@
+---
+title: "Database Design and Implementation"
+author: "William Cichowski"
+date: 2021-11-04T21:13:14-05:00
+categories: ["R"]
+tags: ["R Markdown", "SQL"]
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(collapse = TRUE)
+```
+
+## Source Dataset information
+
+```{r message=FALSE, warning=FALSE}
+# Loading in packages:
+library(tidyverse)
+library(RSQLite)
+library(DBI)
+library(knitr)
+```
+<br>
+**In the following project, I take the following csv (source dataset):**
+<br>
+```{r}
+music <- read.csv("music.csv")
+glimpse(music)
+```
+
+
+**and turn it into a database with the following schema:** 
+<br>
+
+![](schema.PNG)
+
+## SQL code 
+
+```{r}
+db <- dbConnect(RSQLite::SQLite(), ":memory:")
+
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(connection = "music")
+```
+<br>
+```{sql, connection = music}
+/* dropping all the tables because they exists
+in order of parent child relationship */
+drop table if exists Invoice_items;
+drop table if exists tracks;
+drop table if exists album;
+drop table if exists invoice;
+drop table if exists customer;
+drop table if exists genre;
+drop table if exists media_type;
+drop table if exists artist;
+
+/* Creating customer table */
+CREATE TABLE Customer (
+customerID integer unique not NULL primary key AUTOINCREMENT,
+lastName TEXT unique not null,
+firstName TEXT not null,
+address TEXT,
+city TEXT,
+state TEXT,
+country TEXT,
+postalCode TEXT,
+phoneNumber TEXT,
+faxNumber TEXT,
+email TEXT not null
+);
+
+insert into Customer (lastName, firstName, address, city, state, country, postalCode, phoneNumber, faxNumber, email)
+Select Distinct CustomerLastName, CustomerFirstName, CustomerAddress, CustomerCity, CustomerState, CustomerCountry, CustomerPostalCode, CustomerPhone, CustomerFax, CustomerEmail FROM source_dataset
+where CustomerLastName LIKE '_%';
+
+/* Media Type table */
+CREATE TABLE Media_type (
+mediaTypeID integer unique not NULL primary key AUTOINCREMENT,
+name TEXT unique not null
+);
+insert into Media_Type (name)
+Select distinct MediaType from source_dataset;
+
+/* Genre Table */
+CREATE TABLE Genre (
+genreID integer unique not NULL primary key AUTOINCREMENT,
+name TEXT unique not null
+);
+insert into Genre (name)
+Select distinct Genre from source_dataset;
+
+/* Artist table */
+CREATE TABLE Artist (
+artistID integer unique not NULL primary key AUTOINCREMENT,
+name TEXT unique not null
+);
+insert into Artist (name)
+Select distinct ArtistName from source_dataset
+where ArtistName;
+
+/* Invoice table */
+CREATE TABLE Invoice (
+invoiceID integer unique not NULL,
+Date TEXT not null,
+billingAddress TEXT,
+billingCity TEXT,
+billingState TEXT,
+billingCountry TEXT,
+billingPostalCode TEXT,
+customerID int,
+FOREIGN KEY (customerID) REFERENCES Customer(customerID)
+);
+
+insert into Invoice (invoiceID, Date, billingAddress, billingCity, billingState, billingCountry, billingPostalCode, customerID)
+Select distinct InvoiceID, InvoiceDate, InvoiceBillingAddress, InvoiceBillingCity, InvoiceBillingState, InvoiceBillingCountry, InvoiceBillingPostalCode, customerID from source_dataset
+join Customer where Customer.lastName = source_dataset.CustomerLastName and Customer.firstName = source_dataset.CustomerFirstName;
+
+
+
+/* album table */
+CREATE TABLE Album (
+albumID integer unique not NULL primary key AUTOINCREMENT,
+albumTitle TEXT,
+artistID INT,
+FOREIGN KEY (artistID) REFERENCES Artist(artistID)
+);
+
+insert into Album (albumTitle, artistID)
+Select distinct AlbumTitle, artistID from source_dataset
+join Artist where artist.name = source_dataset.ArtistName;
+
+/* tracks table */
+CREATE TABLE Tracks (
+trackID integer unique not NULL primary key AUTOINCREMENT,
+trackName TEXT not null,
+composer TEXT,
+trackSizeByte TEXT,
+trackLength TEXT not null,
+trackPrice TEXT not null,
+genreID int,
+mediaTypeID int,
+albumID int,
+FOREIGN KEY (genreID) REFERENCES Genre(genreID),
+FOREIGN KEY (mediaTypeID) REFERENCES Media_Type(mediaTypeID),
+FOREIGN KEY (albumID) REFERENCES Album(albumID)
+);
+
+
+insert into Tracks (trackName, composer, trackSizeByte, trackLength, trackPrice, genreID, mediaTypeID, albumID)
+Select distinct TrackName, Composer, TrackSizeBytes, TrackLength, TrackPrice, genreID, mediaTypeID, albumID from source_dataset
+join Album on Album.albumTitle = source_dataset.AlbumTitle
+join Genre on Genre.name = source_dataset.Genre
+join Media_Type on Media_Type.name = source_dataset.MediaType;
+
+/* Invoice_items table */
+CREATE TABLE Invoice_Items (
+InvoiceItemID integer unique not NULL primary key AUTOINCREMENT,
+invoiceID int,
+trackID int,
+quantity TEXT not null,
+unitPrice TEXT not null,
+FOREIGN KEY (trackID) REFERENCES Tracks(trackID)
+);
+
+insert into Invoice_Items (invoiceID, trackID, quantity, unitPrice)
+Select invoiceID, trackID, InvoiceItemQuantity, InvoiceItemUnitPrice from source_dataset
+join Tracks on Tracks.trackName = source_dataset.TrackName;
+```
+
+
+
+

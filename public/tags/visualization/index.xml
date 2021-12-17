@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>visualization on William Cichowski&#39;s Projects</title>
+    <link>/tags/visualization/</link>
+    <description>Recent content in visualization on William Cichowski&#39;s Projects</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Thu, 21 Oct 2021 21:13:14 -0500</lastBuildDate><atom:link href="/tags/visualization/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Recreation of 1900&#39;s visualizations</title>
+      <link>/2021/10/21/recreation-of-1900s-visualizations/</link>
+      <pubDate>Thu, 21 Oct 2021 21:13:14 -0500</pubDate>
+      
+      <guid>/2021/10/21/recreation-of-1900s-visualizations/</guid>
+      <description>The goal of this challenge was to celebrate the data visualization legacy of W.E.B DuBois by recreating the visualizations from the 1900 Paris Exposition using modern tools.
+Here is the original plot that I am attempting to recreateHere is my recreation
+# Load in packages...library(tidyverse)library(skimr)library(naniar)library(tidytuesdayR)library(reshape)# Read in the tidy data manuallyyear &amp;lt;- c(1790, 1800, 1810, 1820, 1830, 1840, 1850, 1860, 1870, 1880, 1890)colored &amp;lt;- c(0, 100, 78, 42, 45, 30, 35, 20, 22, 36, 21)white &amp;lt;- c(0, 90, 46, 30, 55, 34, 31, 16, 11, 34, 20)vars &amp;lt;- c(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)dat &amp;lt;- data.</description>
+    </item>
+    
+  </channel>
+</rss>

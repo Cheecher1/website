@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="generator" content="Hugo 0.88.1" />
+
+
+<title>Database Design and Implementation - William Cichowski&#39;s Projects</title>
+<meta property="og:title" content="Database Design and Implementation - William Cichowski&#39;s Projects">
+
+
+  <link href='/favicon.ico' rel='icon' type='image/x-icon'/>
+
+
+
+  
+
+
+
+
+
+
+
+
+<link href='//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css' rel='stylesheet' type='text/css' />
+
+
+
+<link rel="stylesheet" href="/css/fonts.css" media="all">
+<link rel="stylesheet" href="/css/main.css" media="all">
+
+
+
+  </head>
+  <body>
+    <div class="wrapper">
+      <header class="header">
+        <nav class="nav">
+  <a href="/" class="nav-logo">
+    <img src="/images/logo.png"
+         width="50"
+         height="50"
+         alt="Logo">
+  </a>
+
+  <ul class="nav-links">
+    
+    <li><a href="/about/">About</a></li>
+    
+  </ul>
+</nav>
+
+      </header>
+
+
+<main class="content" role="main">
+
+  <article class="article">
+    
+    <span class="article-duration">4 min read</span>
+    
+
+    <h1 class="article-title">Database Design and Implementation</h1>
+
+    
+    <span class="article-date">2021-11-04</span>
+    
+
+    <div class="article-content">
+      
+<script src="/2021/11/04/database-design-and-implementation/index_files/header-attrs/header-attrs.js"></script>
+
+
+<div id="source-dataset-information" class="section level2">
+<h2>Source Dataset information</h2>
+<pre class="r"><code># Loading in packages:
+library(tidyverse)
+library(RSQLite)
+library(DBI)
+library(knitr)</code></pre>
+<p><br>
+<strong>In the following project, I take the following csv (source dataset):</strong>
+<br></p>
+<pre class="r"><code>music &lt;- read.csv(&quot;music.csv&quot;)
+glimpse(music)
+## Rows: 3,759
+## Columns: 28
+## $ TrackName                &lt;chr&gt; &quot;For Those About To Rock (We Salute You)&quot;, &quot;B~
+## $ Composer                 &lt;chr&gt; &quot;Angus Young, Malcolm Young, Brian Johnson&quot;, ~
+## $ TrackLength              &lt;int&gt; 343719, 342562, 342562, 230619, 252051, 37541~
+## $ TrackSizeBytes           &lt;int&gt; 11170334, 5510424, 5510424, 3990994, 4331779,~
+## $ TrackPrice               &lt;dbl&gt; 0.99, 0.99, 0.99, 0.99, 0.99, 0.99, 0.99, 0.9~
+## $ Genre                    &lt;chr&gt; &quot;Rock&quot;, &quot;Rock&quot;, &quot;Rock&quot;, &quot;Rock&quot;, &quot;Rock&quot;, &quot;Rock~
+## $ MediaType                &lt;chr&gt; &quot;MPEG audio file&quot;, &quot;Protected AAC audio file&quot;~
+## $ AlbumTitle               &lt;chr&gt; &quot;For Those About To Rock We Salute You&quot;, &quot;Bal~
+## $ ArtistName               &lt;chr&gt; &quot;AC/DC&quot;, &quot;Accept&quot;, &quot;Accept&quot;, &quot;Accept&quot;, &quot;Accep~
+## $ InvoiceItemQuantity      &lt;int&gt; 1, 1, 1, 1, 1, 1, 1, NA, 1, 1, 1, 1, 1, NA, 1~
+## $ InvoiceItemUnitPrice     &lt;dbl&gt; 0.99, 0.99, 0.99, 0.99, 0.99, 0.99, 0.99, NA,~
+## $ InvoiceId                &lt;int&gt; 108, 1, 214, 319, 1, 108, 2, NA, 2, 214, 108,~
+## $ InvoiceDate              &lt;chr&gt; &quot;2010-04-13 00:00:00&quot;, &quot;2009-01-01 00:00:00&quot;,~
+## $ InvoiceBillingAddress    &lt;chr&gt; &quot;Via Degli Scipioni, 43&quot;, &quot;Theodor-Heuss-Stra~
+## $ InvoiceBillingCity       &lt;chr&gt; &quot;Rome&quot;, &quot;Stuttgart&quot;, &quot;Yellowknife&quot;, &quot;BrasÃ­li~
+## $ InvoiceBillingState      &lt;chr&gt; &quot;RM&quot;, &quot;&quot;, &quot;NT&quot;, &quot;DF&quot;, &quot;&quot;, &quot;RM&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;~
+## $ InvoiceBillingCountry    &lt;chr&gt; &quot;Italy&quot;, &quot;Germany&quot;, &quot;Canada&quot;, &quot;Brazil&quot;, &quot;Germ~
+## $ InvoiceBillingPostalCode &lt;chr&gt; &quot;00192&quot;, &quot;70174&quot;, &quot;X1A 1N6&quot;, &quot;71020-677&quot;, &quot;70~
+## $ CustomerFirstName        &lt;chr&gt; &quot;Lucas&quot;, &quot;Leonie&quot;, &quot;Ellie&quot;, &quot;Fernanda&quot;, &quot;Leon~
+## $ CustomerLastName         &lt;chr&gt; &quot;Mancini&quot;, &quot;KÃ¶hler&quot;, &quot;Sullivan&quot;, &quot;Ramos&quot;, &quot;K~
+## $ CustomerAddress          &lt;chr&gt; &quot;Via Degli Scipioni, 43&quot;, &quot;Theodor-Heuss-Stra~
+## $ CustomerCity             &lt;chr&gt; &quot;Rome&quot;, &quot;Stuttgart&quot;, &quot;Yellowknife&quot;, &quot;BrasÃ­li~
+## $ CustomerState            &lt;chr&gt; &quot;RM&quot;, &quot;&quot;, &quot;NT&quot;, &quot;DF&quot;, &quot;&quot;, &quot;RM&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;~
+## $ CustomerCountry          &lt;chr&gt; &quot;Italy&quot;, &quot;Germany&quot;, &quot;Canada&quot;, &quot;Brazil&quot;, &quot;Germ~
+## $ CustomerPostalCode       &lt;chr&gt; &quot;00192&quot;, &quot;70174&quot;, &quot;X1A 1N6&quot;, &quot;71020-677&quot;, &quot;70~
+## $ CustomerPhone            &lt;chr&gt; &quot;+39 06 39733434&quot;, &quot;+49 0711 2842222&quot;, &quot;+1 (8~
+## $ CustomerFax              &lt;chr&gt; &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;+55 (61) 3363-7855&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;,~
+## $ CustomerEmail            &lt;chr&gt; &quot;lucas.mancini@yahoo.it&quot;, &quot;leonekohler@surfeu~</code></pre>
+<p><strong>and turn it into a database with the following schema:</strong>
+<br></p>
+<p><img src="schema.PNG" /></p>
+</div>
+<div id="sql-code" class="section level2">
+<h2>SQL code</h2>
+<pre class="r"><code>db &lt;- dbConnect(RSQLite::SQLite(), &quot;:memory:&quot;)
+
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(connection = &quot;db&quot;)</code></pre>
+<p><br></p>
+<pre class="sql"><code>/* dropping all the tables because they exists
+in order of parent child relationship */
+drop table if exists Invoice_items;
+drop table if exists tracks;
+drop table if exists album;
+drop table if exists invoice;
+drop table if exists customer;
+drop table if exists genre;
+drop table if exists media_type;
+drop table if exists artist;
+
+/* Creating customer table */
+CREATE TABLE Customer (
+customerID integer unique not NULL primary key AUTOINCREMENT,
+lastName TEXT unique not null,
+firstName TEXT not null,
+address TEXT,
+city TEXT,
+state TEXT,
+country TEXT,
+postalCode TEXT,
+phoneNumber TEXT,
+faxNumber TEXT,
+email TEXT not null
+);
+
+insert into Customer (lastName, firstName, address, city, state, country, postalCode, phoneNumber, faxNumber, email)
+Select Distinct CustomerLastName, CustomerFirstName, CustomerAddress, CustomerCity, CustomerState, CustomerCountry, CustomerPostalCode, CustomerPhone, CustomerFax, CustomerEmail FROM source_dataset
+where CustomerLastName LIKE &#39;_%&#39;;
+
+/* Media Type table */
+CREATE TABLE Media_type (
+mediaTypeID integer unique not NULL primary key AUTOINCREMENT,
+name TEXT unique not null
+);
+insert into Media_Type (name)
+Select distinct MediaType from source_dataset;
+
+/* Genre Table */
+CREATE TABLE Genre (
+genreID integer unique not NULL primary key AUTOINCREMENT,
+name TEXT unique not null
+);
+insert into Genre (name)
+Select distinct Genre from source_dataset;
+
+/* Artist table */
+CREATE TABLE Artist (
+artistID integer unique not NULL primary key AUTOINCREMENT,
+name TEXT unique not null
+);
+insert into Artist (name)
+Select distinct ArtistName from source_dataset
+where ArtistName;
+
+/* Invoice table */
+CREATE TABLE Invoice (
+invoiceID integer unique not NULL,
+Date TEXT not null,
+billingAddress TEXT,
+billingCity TEXT,
+billingState TEXT,
+billingCountry TEXT,
+billingPostalCode TEXT,
+customerID int,
+FOREIGN KEY (customerID) REFERENCES Customer(customerID)
+);
+
+insert into Invoice (invoiceID, Date, billingAddress, billingCity, billingState, billingCountry, billingPostalCode, customerID)
+Select distinct InvoiceID, InvoiceDate, InvoiceBillingAddress, InvoiceBillingCity, InvoiceBillingState, InvoiceBillingCountry, InvoiceBillingPostalCode, customerID from source_dataset
+join Customer where Customer.lastName = source_dataset.CustomerLastName and Customer.firstName = source_dataset.CustomerFirstName;
+
+
+
+/* album table */
+CREATE TABLE Album (
+albumID integer unique not NULL primary key AUTOINCREMENT,
+albumTitle TEXT,
+artistID INT,
+FOREIGN KEY (artistID) REFERENCES Artist(artistID)
+);
+
+insert into Album (albumTitle, artistID)
+Select distinct AlbumTitle, artistID from source_dataset
+join Artist where artist.name = source_dataset.ArtistName;
+
+/* tracks table */
+CREATE TABLE Tracks (
+trackID integer unique not NULL primary key AUTOINCREMENT,
+trackName TEXT not null,
+composer TEXT,
+trackSizeByte TEXT,
+trackLength TEXT not null,
+trackPrice TEXT not null,
+genreID int,
+mediaTypeID int,
+albumID int,
+FOREIGN KEY (genreID) REFERENCES Genre(genreID),
+FOREIGN KEY (mediaTypeID) REFERENCES Media_Type(mediaTypeID),
+FOREIGN KEY (albumID) REFERENCES Album(albumID)
+);
+
+
+insert into Tracks (trackName, composer, trackSizeByte, trackLength, trackPrice, genreID, mediaTypeID, albumID)
+Select distinct TrackName, Composer, TrackSizeBytes, TrackLength, TrackPrice, genreID, mediaTypeID, albumID from source_dataset
+join Album on Album.albumTitle = source_dataset.AlbumTitle
+join Genre on Genre.name = source_dataset.Genre
+join Media_Type on Media_Type.name = source_dataset.MediaType;
+
+/* Invoice_items table */
+CREATE TABLE Invoice_Items (
+InvoiceItemID integer unique not NULL primary key AUTOINCREMENT,
+invoiceID int,
+trackID int,
+quantity TEXT not null,
+unitPrice TEXT not null,
+FOREIGN KEY (trackID) REFERENCES Tracks(trackID)
+);
+
+insert into Invoice_Items (invoiceID, trackID, quantity, unitPrice)
+Select invoiceID, trackID, InvoiceItemQuantity, InvoiceItemUnitPrice from source_dataset
+join Tracks on Tracks.trackName = source_dataset.TrackName;</code></pre>
+</div>
+
+    </div>
+  </article>
+
+  
+
+
+</main>
+
+      <footer class="footer">
+        <ul class="footer-links">
+          <li>
+            <a href="/index.xml" type="application/rss+xml" target="_blank">RSS feed</a>
+          </li>
+          <li>
+            <a href="https://gohugo.io/" class="footer-links-kudos">Made with <img src="/images/hugo-logo.png" alt="Img link to Hugo website" width="22" height="22"></a>
+          </li>
+        </ul>
+      </footer>
+
+    </div>
+    
+
+
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+
+
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/r.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/yaml.min.js"></script>
+<script>hljs.configure({languages: []}); hljs.initHighlightingOnLoad();</script>
+
+
+
+    
+<script src="/js/math-code.js"></script>
+<script async src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+
+
+    
+  </body>
+</html>
+

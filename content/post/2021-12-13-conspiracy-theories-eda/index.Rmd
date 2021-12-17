@@ -1,0 +1,517 @@
+---
+title: Conspiracy Theories EDA
+author: William Cichowski
+date: '2021-12-13'
+slug: conspiracy-theories-eda
+categories: []
+tags: []
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+## Data Title
+
+Measuring Belief In Conspiracy Theories
+
+## Data Source
+This project utilizes data gathered by Yam Peleg, thank you for providing such a thorough and complete dataset.
+<br>
+Yam Peleg. (2021). Measuring Belief In Conspiracy Theories (Version 12) [Survey Data]. Retrieved from https://www.kaggle.com/yamqwe/measuring-belief-in-conspiracy-theories/metadata
+<br>
+
+```{r message=FALSE, warning=FALSE, include=FALSE}
+# Load packages...
+library(tidyverse)
+library(reshape)
+library(patchwork)
+library(TAM)
+library(WrightMap)
+
+
+
+# Load datasets...
+consp <- read_csv(file = "tidy_conspiracy.csv")
+```
+<br>
+
+## Dataset Information
+This data was collected through an interactive on-line version of the Generic Conspiracist Beliefs Scale in 2016 on [Open Psychometrics.](https://openpsychometrics.org/tests/GCBS/). The Generic Conspiracist Beliefs Scale (GCBS) is the most widely used measure of general belief in conspiracy theories. The scale comprises five related but distinct factors (Government Malfeasance, Extraterrestrial Cover-up, Malevolent Global Conspiracies, Personal Well being, and Control of Information) and has 3 questions that address each factor. This dataset contains **2495 observations** (people who answered the questionnaire) and has **73 different variables**. One variable is a distinct identifier, 54 different questions, and 18 variables that measured the time it took to answer each question.
+
+* Of the 54 different questions (see codebook for more thorough explanations):
+  + Q1-Q15 are Questions are from the GCBS
+  + TIPI1-TIPI10 Questions are from the The Ten Item Personality Inventory (Brief Measure of the Big Five           Personality Domains)
+  + VCL1-VCL16 Were presented as a check-list and subjects were instructed "In the grid below, check all the        words whose definitions you are sure you know" This was a validity check.
+  + education, urban, gender, engnat, age, hand, religion, orientation, race, voted, married, familysize, major
+    were all demographic variables.
+
+### The GCBS Questions:
+The responses to the Generic Conspiracist Beliefs Scale questions range from 1-5 (1 = Disagree, 3 = Neutral, and 5 = Agree). Here are the subgroups of the GCBS and the questions that make up that group:
+<br>
+**Government Malfeasance**
+
+
+- Q1: The government is involved in the murder of innocent citizens and/or well-known public figures, and keeps
+  this a secret.
+- Q6: The government permits or perpetrates acts of terrorism on its own soil, disguising its involvement.
+- Q11: The government uses people as patsies to hide its involvement in criminal activity.
+
+
+**Extraterrestrial Cover-up**
+
+
+* Q3: Secret organizations communicate with extraterrestrials, but keep this fact from the public.
+* Q8: Evidence of alien contact is being concealed from the public.
+* Q13: Some UFO sightings and rumors are planned or staged in order to distract the public from real alien contact.
+
+
+**Malevolent Global Conspiracies**
+
+
+* Q2: The power held by heads of state is second to that of small unknown groups who really control world politics.
+* Q7: A small, secret group of people is responsible for making all major world decisions, such as going to war.
+* Q12: Certain significant events have been the result of the activity of a small group who secretly manipulate world events.
+
+
+**Personal Well being** 
+
+
+* Q4: The spread of certain viruses and/or diseases is the result of the deliberate, concealed efforts of some organization.
+* Q9: Technology with mind-control capacities is used on people without their knowledge.
+* Q14: Experiments involving new drugs or technologies are routinely carried out on the public without their knowledge or consent.
+
+
+**Control of Information**
+
+
+* Q5: Groups of scientists manipulate, fabricate, or suppress evidence in order to deceive the public.
+* Q10: New and advanced technology which would harm current industry is being suppressed.
+* Q15: A lot of important information is deliberately concealed from the public out of self-interest.
+
+Now, lets get a peak into our data.
+
+
+## Correlation Between Questions
+The correlation matrix between all numeric variables inside of this dataset would be uninteresting due to the sheer quantity of information, so here are some of the more interesting correlation matrices. The first one is a correlation matrix between each of the questions and a corresponding heatmap.
+<br>
+```{r echo=FALSE, warning=FALSE}
+# creating a dataset that only contains the first 15 questions
+quests_data <-
+  consp %>% 
+  select(Q1:Q15)
+
+# correlation between all numeric variables
+cor_m <- cor(quests_data)
+data_melt <- melt(cor_m)
+
+gcsb_quest <- cor(quests_data) %>% 
+  melt()
+cor_m
+# geom_tile to show correlations
+ggplot(data = data_melt) +
+  geom_tile(
+    mapping = aes(X1, X2, fill = value)
+  ) +
+  labs(
+    x = "Question Number",
+    y = "Question Number"
+  ) + 
+  scale_fill_gradient2(name = "Correlation \nBetween\nQuestions",
+                       high = "#7a7a7a",
+                       mid = "#ffffff"
+  ) + 
+  annotate(geom = "point", x = "Q1", y = "Q6", colour = "orange", size = 6, alpha = .5) + 
+  annotate(geom = "point", x = "Q2", y = "Q7", colour = "orange", size = 6, alpha = .5) +
+  annotate(geom = "point", x = "Q3", y = "Q8", colour = "orange", size = 6, alpha = .5) +
+  annotate(geom = "point", x = "Q4", y = "Q9", colour = "orange", size = 6, alpha = .5) +
+  annotate(geom = "point", x = "Q5", y = "Q10", colour = "orange", size = 6, alpha = .5) +
+  annotate(geom = "point", x = "Q6", y = "Q11", colour = "orange", size = 6, alpha = .5) + 
+  annotate(geom = "point", x = "Q7", y = "Q12", colour = "orange", size = 6, alpha = .5) +
+  annotate(geom = "point", x = "Q8", y = "Q13", colour = "orange", size = 6, alpha = .5) +
+  annotate(geom = "point", x = "Q9", y = "Q14", colour = "orange", size = 6, alpha = .5) +
+  annotate(geom = "point", x = "Q10", y = "Q15", colour = "orange", size = 6, alpha = .5) +
+  annotate(geom = "point", x = "Q1", y = "Q11", colour = "orange", size = 6, alpha = .5) + 
+  annotate(geom = "point", x = "Q2", y = "Q12", colour = "orange", size = 6, alpha = .5) +
+  annotate(geom = "point", x = "Q3", y = "Q13", colour = "orange", size = 6, alpha = .5) +
+  annotate(geom = "point", x = "Q4", y = "Q14", colour = "orange", size = 6, alpha = .5) +
+  annotate(geom = "point", x = "Q5", y = "Q15", colour = "orange", size = 6, alpha = .5)
+```
+<br>
+Although the questions have been factored into 5 groups, investigators have typically treated the GCBS as unidimensional by referencing only overall total according to [Kenneth Graham Drinkwater.](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC7082021/#pone.0230365.ref038) 
+Obviously, the the points along the diagonal have a correlation of 1 (each question has a perfect correlation with itself), but the questions overall seem to have a mid-high correlation with one another. On the upper left of the diagonal, I have added orange circles that represent the correlations between clustered points, these points tend to have slightly higher correlations than elsewhere on the graph, which we can see here.
+<br>
+Next, we have correlation matrix, and heatmap of the time taken to answer each question and then a heatmap of questions and time combined.
+<br>
+```{r, echo=FALSE, warning=FALSE}
+# Correlation between time taken to answer
+time_data <-
+  consp %>% 
+  select(E1:E15)
+
+cor_m <- cor(time_data)
+time_melt <- melt(cor_m)
+cor_m
+
+# geom_tile to show correlations
+ggplot(data = time_melt) +
+  geom_tile(
+    mapping = aes(X1, X2, fill = value)
+  ) +
+  labs(
+    x = "Time taken for each question",
+    y = "Time taken for each question"
+  ) + 
+  scale_fill_gradient2(name = "Correlation \nBetween\nQuestions",
+                       high = "#7a7a7a",
+                       mid = "#ffffff"
+  )
+
+# correlation for time and questions combined
+# Correlation between time taken to answer
+qandt_data <-
+  consp %>% 
+  select(Q1:E15)
+
+cor_m <- cor(qandt_data)
+qandt_melt <- melt(cor_m)
+
+# geom_tile to show correlations
+ggplot(data = qandt_melt) +
+  geom_tile(
+    mapping = aes(X1, X2, fill = value)
+  ) +
+  labs(
+    x = "Question Number or Time taken",
+    y = "Question Number or Time Taken"
+  ) + 
+  scale_fill_gradient2(name = "Correlation \nBetween\nQuestions",
+                       high = "#7a7a7a",
+                       mid = "#ffffff"
+  )
+
+```
+<br>
+The correlations between are very small if any, the only trend we see is that as the survey progresses, the time taken to answer each question becomes slightly more correlated with the time it took to answer the previous and next question.
+<br>
+Lastly for correlations, we will explore the relationship between the factored groups scores and the total scores.
+```{r, echo = FALSE, warning=FALSE}
+# correlations between groups and total score
+cor_m <- cor(consp[, c('total_score', 'gm_score', 'mg_score', 'et_score', 'pw_score', 'ci_score')])
+
+score_mat <- melt(cor_m)
+
+cor_m
+
+# heatmap based off correlation matrix for scores
+ggplot(data = score_mat) +
+  geom_tile(
+    mapping = aes(X1, X2, fill = value)
+  ) +
+  labs(
+    x = NULL,
+    y = NULL
+  ) + 
+  scale_fill_gradient2(name = "Correlation \nBetween\nScores",
+                       high = "#7a7a7a",
+                       mid = "#ffffff",
+                       low = "#ffffff"
+  ) + 
+  scale_x_discrete(limits = c('total_score', 'gm_score', 'mg_score', 'et_score',
+                              'pw_score', 'ci_score'),
+                   labels = c("Total", "Government\nMalfeasance", "Malevolent\nGlobal\nConspiracies",
+                              "Extraterrestrial\nCover-up","Personal\nWell being",
+                              "Control\nof\nInformation")) +
+  scale_y_discrete(limits = c('total_score', 'gm_score', 'mg_score', 'et_score',
+                              'pw_score', 'ci_score'),
+                   labels = c("Total", "Government\nMalfeasance", "Malevolent\nGlobal\nConspiracies",
+                              "Extraterrestrial\nCover-up","Personal\nWell being",
+                              "Control\nof\nInformation"))+
+  theme_minimal()
+
+```
+<br>
+The toal score is highly correlated with every sub score, and the subgroups that have the highest correlation between responses are the Malevelant Global Conspiracies and Personal Well-being categories. The sub-categories
+with the lowest correlation are Extraterrestrial cover-up and Government Malfeasance.
+
+## Distributions amoung Demographics
+
+```{r message=FALSE, warning=FALSE}
+```
+
+
+```{r message=FALSE, warning=FALSE, echo=FALSE}
+# Demographic distribution function
+demographic_distributions <- function(score, fills, bbins = 30) {
+  consp %>% 
+    drop_na(fills) %>% 
+    ggplot() +
+    geom_histogram(
+      mapping = aes_string(
+        x = score,
+        group = fills,
+        fill = fills
+      ),
+      bins = bbins
+    ) +
+    labs(
+      x = "Total Score",
+      y = "Number of people with this score",
+      title = str_to_upper(score)
+    ) +
+    theme_minimal()
+}
+
+# total score verses each demographic
+p1 <- demographic_distributions("total_score", "race")
+
+p2 <- demographic_distributions("total_score", "education")
+
+p3 <- demographic_distributions("total_score", "urban")
+
+p4 <- demographic_distributions("total_score", "gender")
+
+p5 <- demographic_distributions("total_score", "familysize")
+
+p6 <- demographic_distributions("total_score", "engnat")
+
+p7 <- demographic_distributions("total_score", "age")
+
+p8 <- demographic_distributions("total_score", "hand")
+
+p9 <- demographic_distributions("total_score", "religion")
+
+p10 <- demographic_distributions("total_score", "orientation")
+
+p11 <- demographic_distributions("total_score", "voted")
+
+p12 <- demographic_distributions("total_score", "married")
+p1
+
+```
+For all of the total score distributions, we see roughly normal distribution with no significant trends in race.
+```{r, echo=FALSE}
+p2
+```
+We can see here that the majority of responders have completed highschool, but did not go on to graduate from University.
+```{r, echo=FALSE}
+p3
+```
+With respect to the urban deomgraphic, we can see that the majority of people in the survey are from the suburbs, followed by urban, with no signifacant trend in response.
+```{r, echo=FALSE}
+p4
+```
+The number of female and male respondents seems almost the same. Interestingly, we see that the male distribution tends to be flatter(less bell like) than the female distribution.
+```{r, echo=FALSE}
+p5
+```
+Uninteresting and not useful graph due to one falty response.
+```{r, echo=FALSE}
+p6
+```
+Majority of the participants were of english nationality.
+```{r, echo=FALSE}
+p7
+```
+This graph is not useful because we have one outlier who completely lied about their age.
+```{r, echo=FALSE}
+p8
+```
+We see here that the dominant hand does not really have any correlation with results.
+
+```{r, echo=FALSE}
+p9
+```
+One interesting result of this graph is that other has a much higher total score that all of the other groups.
+```{r, echo=FALSE}
+p10
+```
+We see that all orientations have virtually identical distributions.
+```{r, echo=FALSE}
+p11
+```
+We see that all those who voted and did not vote have virtually identical distributions.
+```{r, echo=FALSE}
+p12
+```
+We see that those who are married and not married have virtually identical distributions.
+<br>
+Next, I modified the demographic function to address each sub-score of the test to measure it against each demographic, I then plugged these into map functions. I will adrress any interesting results after the displaysof all the graphs.
+
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+# creating functions to map each sub-score
+gm_dem_function <- function(fills) {
+  demographic_distributions(score = "gm_score", fills, bbins = 12)
+}
+mg_dem_function <- function(fills) {
+  demographic_distributions(score = "mg_score", fills, bbins = 12)
+}
+et_dem_function <- function(fills) {
+  demographic_distributions(score = "et_score", fills, bbins = 12)
+}
+pw_dem_function <- function(fills) {
+  demographic_distributions(score = "pw_score", fills, bbins = 12)
+}
+ci_dem_function <- function(fills) {
+  demographic_distributions(score = "ci_score", fills, bbins = 12)
+}
+# running each map
+map(names(consp[61:72]), gm_dem_function)
+map(names(consp[61:72]), mg_dem_function)
+map(names(consp[61:72]), et_dem_function)
+map(names(consp[61:72]), pw_dem_function)
+map(names(consp[61:72]), ci_dem_function)
+
+# Creating Item response theory models and Rasch models
+
+
+```
+The Government Malevolence scores (GM) seems to have 3 different peaks, the lowest score,
+the middle score, and the highest score (3, 10, 15) respectively. Interestingly enough, all of the scores seem to follow the same pattern--at slightly different intensities--besides the Control of Information sub-group. The Malevolent Global (MG) Conspiracies and Extraterrestrial Cover-up group have virtually identical distributions, majority of 3's, followed by significantly less 10s, and even less 15's. The personal well-being is a cross between the GM and MG groups with peaks at each of the numbers that slightly decrease until 15. 
+
+## Bivariate analysis
+We are graphing the relationship between the total score and each of the sub scores and the familysize and age of the respondents.
+```{r, echo=FALSE, warning=FALSE}
+# Eliminating unrealistic variables
+consp1 <- consp %>% 
+  filter(age < 100 & familysize < 25)
+
+hex_func <- function(x, y){
+  consp1 %>% 
+    ggplot(aes_string(x = x, y = y)) +
+    geom_hex(bins = 10)
+}
+
+point_func <- function(x, y){
+  consp1 %>% 
+    ggplot(aes_string(x = x, y = y)) +
+    geom_point()
+}
+
+# creating all of the graphs for age
+point_func("age", "total_score")
+hex_func("age", "total_score")
+
+point_func("age", "gm_score")
+hex_func("age", "gm_score")
+
+point_func("age", "mg_score")
+hex_func("age", "mg_score")
+
+point_func("age", "et_score")
+hex_func("age", "et_score")
+
+point_func("age", "pw_score")
+hex_func("age", "pw_score")
+
+point_func("age", "ci_score")
+hex_func("age", "ci_score")
+
+# creating all of the graphs for familysize
+point_func("familysize", "total_score")
+hex_func("familysize", "total_score")
+
+point_func("familysize", "gm_score")
+hex_func("familysize", "gm_score")
+
+point_func("familysize", "mg_score")
+hex_func("familysize", "mg_score")
+
+point_func("familysize", "et_score")
+hex_func("familysize", "et_score")
+
+point_func("familysize", "pw_score")
+hex_func("familysize", "pw_score")
+
+point_func("familysize", "ci_score")
+hex_func("familysize", "ci_score")
+```
+Here we can see that there is a very little, if any relationship between family size and age and the scores in each of the sub-categories. The only interesting thing that we can derive from these plots is that the few very large family sizes in the plot tend to believe more in conpsiracy theories. 
+
+## Item Response Theory (Rasch Model)
+This was a much more experimental portion of my project, but I figured I had to try given the structure of my data. Item response Theory(IRT) is a mathematical approach for quantifying latent traits based on the fundamental assumption that a subject’s response to an item is a function of the difference between 1) his/her abilities and 2) the characteristics of the item. Here, I attempt to create a Rasch Model on the basis of the first 15 questions and create a difficulty based on each score (1-5) for each question. I was forced to eliminate one of the categories due to faulty results. 
+First, We will explore the ICC Curves of the 15 questions (unfortunately, there is nothing I can do to hide the iteration cycles, but they provide meaningful information such as the variance parameters and estimations):
+```{r, echo=FALSE, results=FALSE, message=FALSE}
+# We need a dataset with just the questions
+
+quests_data <- consp %>% 
+  select(Q1:Q15)
+
+mod1 <- tam(quests_data)
+
+# we need to extract the difficulties of each question
+diffic <- mod1$xsi %>% 
+  filter(xsi > -3 & xsi < 3)
+
+# plot (ICC Curves)
+plot(mod1)
+
+```
+We can see that the expected are generally pretty good estimates for the actual results. We also can see
+that the questions greatly vary in "ability" required to solve them. Questions 2, 3, 6, 8, 9, and 13 all require high levels of ability (ability 0 is at a score of 2.25 or less). Specifically questions 3, 9, 13, which means, these values are correlated the most to higher scores on the test. The questions not listed (1, 4, 5, 7, 10, 11, 12, 14, 15) do not have as strong of a correlation with total score.
+```{r, echo=FALSE}
+
+# Distribution of difficulties
+ggplot(diffic, aes(x = xsi)) +
+  geom_histogram(bins=15) +
+  labs(
+    title = "Distribution of Item Difficulties"
+    )
+
+
+# Standard error visualization
+ggplot(diffic, aes(x = xsi, y=se.xsi)) + geom_point() +
+  labs(
+    title = "Item difficulties and their standard error", 
+    x = "Estimated Item Difficulties",
+    y = "Estimated Item Standard Errors"
+  )
+
+# seeing on a scatter plot
+diffic %>% 
+  rowid_to_column("ID") %>% 
+  ggplot(aes(x = ID, y = xsi)) +
+  geom_point()
+
+# summary of difficulties
+summary(diffic)
+
+```
+We can see there is almost no relationship with question number and difficulty, this makes sense because the questionaire was put together in a random order. The estimated item difficulty is convexly correlated to the standard error. ALso, the minimum xsi maximum xsi and mean xsi are the minimum, maximum, and mean difficulties respectively.
+
+```{r, echo=FALSE}
+# Finding the fit of our variables
+fit <- tam.fit(mod1)
+
+# Visualizing item fit infit
+fit_stats <- fit$itemfit 
+
+fit_stats %>%
+  ggplot(aes(x=parameter, y = Infit)) + 
+  geom_point() + 
+  geom_hline(yintercept = 1.2) +
+  geom_hline(yintercept = .8) +
+  scale_y_continuous(breaks = scales::pretty_breaks(n = 15)) + 
+  ggtitle("Item Fit Statistics for Lab 3 Data")
+  
+# visualizing item fit outfit
+
+fit_stats %>%
+  filter(Outfit < 20) %>% 
+  ggplot(aes(x=parameter, y = Outfit)) + 
+  geom_point() + 
+  geom_hline(yintercept = 1.2) +
+  geom_hline(yintercept = .8) +
+  scale_y_continuous(breaks = scales::pretty_breaks(n = 15)) + 
+  ggtitle("Item Fit Statistics for Lab 3 Data")
+  
+# IRT Wright map
+IRT.WrightMap(mod1)
+
+```
+Here we can see that almost all of the graphs have very close to perfect infits, and roughly close to fit outfits aswell (with greater variation). The wright map shows that the majority of respondees landed in the 3-4-5 range for responses on questions, and we can see that basically every questions follows a logical format where people who choose category 5 (agree the most with the singular question) tend to have higher scores. This is very much the case in 3, 9, and 13 where we can see they are noticably higher than all of the other questions, which makes sense given their influence that we discussed earlier. 
+
+<br>
+
+## Conclusion
+This dataset has so much information to explore, and we have only scrathed the surface. Based off the correlation matrices we can conclude that questions in the same group generally had a much higher correlation than random questions. The only subgroup where this fact did not hold was Control of Information. We can also conclude that the time taken to answer each question is uncorrelated except near the end, where correlations greatly increase per question. We can also conclude that the score distribution follows a normal distribution, and we do not have too many intersting results in the demographics. We can also see in the IRT that some questions (such as Q3, Q9, and Q13) had a larger correlation with total score than others. This may provide some insight to the researchers on how to word questions or the content of questions in the furture. 
