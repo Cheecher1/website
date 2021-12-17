@@ -1,0 +1,85 @@
+---
+title: Conspiracy Theories Executive Summary
+author: William Cichowski
+date: '2021-12-17'
+slug: conspiracy-theories-executive-summary
+categories: []
+tags: []
+---
+```{r message=FALSE, warning=FALSE, include=FALSE}
+# Load packages...
+library(tidyverse)
+library(reshape)
+library(patchwork)
+library(TAM)
+library(WrightMap)
+
+
+
+# Load datasets...
+consp <- read_csv(file = "tidy_conspiracy.csv")
+```
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+The General Conspiracy Belief Scale (GCSB) was an aggregate tool created by pyschologists to measure general belief as opposed to belief in specific conspiracy theories. The questions aim to ask whether the person taking the survey agrees with the baseline beliefs of all conspiracy theories instead of anyone in particular. The scale was developed by Robert Brotherton, Christopher C. French and Alan D. Pickering of Goldsmiths University of London in 2013. The data used in this exploratory data analysis was gathered from openpsychometrics.org and had various questions to validate the responses in this dataset. The GCSB was created with 5 sub-sets in mind, but psychologists general use the total score as they have only been able to find slight correlations between responses in grouped questions. The purpose of my analysis was the different degree of beliefs in conspiracy theories between demographics and see how the questions related to one another and the overall result.
+In the following graphic:
+```{r echo=FALSE, warning=FALSE}
+# creating a dataset that only contains the first 15 questions
+quests_data <-
+  consp %>% 
+  select(Q1:Q15)
+
+# correlation between all numeric variables
+cor_m <- cor(quests_data)
+data_melt <- melt(cor_m)
+
+gcsb_quest <- cor(quests_data) %>% 
+  melt()
+# geom_tile to show correlations
+ggplot(data = data_melt) +
+  geom_tile(
+    mapping = aes(X1, X2, fill = value)
+  ) +
+  labs(
+    x = "Question Number",
+    y = "Question Number"
+  ) + 
+  scale_fill_gradient2(name = "Correlation \nBetween\nQuestions",
+                       high = "#7a7a7a",
+                       mid = "#ffffff"
+  ) + 
+  annotate(geom = "point", x = "Q1", y = "Q6", colour = "orange", size = 6, alpha = .5) + 
+  annotate(geom = "point", x = "Q2", y = "Q7", colour = "orange", size = 6, alpha = .5) +
+  annotate(geom = "point", x = "Q3", y = "Q8", colour = "orange", size = 6, alpha = .5) +
+  annotate(geom = "point", x = "Q4", y = "Q9", colour = "orange", size = 6, alpha = .5) +
+  annotate(geom = "point", x = "Q5", y = "Q10", colour = "orange", size = 6, alpha = .5) +
+  annotate(geom = "point", x = "Q6", y = "Q11", colour = "orange", size = 6, alpha = .5) + 
+  annotate(geom = "point", x = "Q7", y = "Q12", colour = "orange", size = 6, alpha = .5) +
+  annotate(geom = "point", x = "Q8", y = "Q13", colour = "orange", size = 6, alpha = .5) +
+  annotate(geom = "point", x = "Q9", y = "Q14", colour = "orange", size = 6, alpha = .5) +
+  annotate(geom = "point", x = "Q10", y = "Q15", colour = "orange", size = 6, alpha = .5) +
+  annotate(geom = "point", x = "Q1", y = "Q11", colour = "orange", size = 6, alpha = .5) + 
+  annotate(geom = "point", x = "Q2", y = "Q12", colour = "orange", size = 6, alpha = .5) +
+  annotate(geom = "point", x = "Q3", y = "Q13", colour = "orange", size = 6, alpha = .5) +
+  annotate(geom = "point", x = "Q4", y = "Q14", colour = "orange", size = 6, alpha = .5) +
+  annotate(geom = "point", x = "Q5", y = "Q15", colour = "orange", size = 6, alpha = .5)
+```
+<br>
+we can see that, there is some correlation (upwards of almost .8) between variables in the same group. All of the orange circles represent the correlation between two questions in the same group, and its clearly visible that these questions are darker than the rest of the plot.
+<br>
+<br>
+Here is a Wright Map, which is commonly used in IRT, that shows which questions had the highest correlation with the overall total score on the test, and how common each response was to each question (between 1 and 5). Based off of this plot, we can see that the majority of respondents answers were between 3, 4, and 5, but the more interesting information lies in the position of the categories. The higher the point is on the graph, the higher its difficulty was (meaning its correlation with the total score). We can see here that questions 3, 9, and 13 had the highest correlation with the total score. Researchers may be able to use this information to make more targeted questions in the future.
+
+```{r, echo=FALSE, results=FALSE, message=FALSE}
+# We need a dataset with just the questions
+
+quests_data <- consp %>% 
+  select(Q1:Q15)
+
+mod1 <- tam(quests_data)
+
+# IRT Wright map
+IRT.WrightMap(mod1)
+```
